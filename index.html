@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FAQ Chatbot</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+
+        /* Chatbox container */
+        #chatbox {
+            width: 50%;
+            height: 300px;
+            border: 20px solid #007bff;
+            padding: 10px;
+            overflow-y: auto;
+            margin: 0 auto;
+            background: white;
+        }
+
+        /* Input box */
+        #input {
+            width: 43%;
+            padding: 10px;
+            border: 5px solid #007bff;
+            margin: 0 auto;
+            display: block;
+        }
+
+        /* Send button */
+        #send {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            display: block;
+            margin: 10px auto;
+            cursor: pointer;
+        }
+
+        /* User message bubble */
+        .user-msg {
+            background-color: #e5e5e5;
+            color: #333;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 8px 0;
+            width: fit-content;
+            max-width: 70%;
+        }
+
+        /* Chatbot message bubble */
+        .bot-msg {
+            background-color: #d0e7ff;
+            color: #0056b3;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 8px 0;
+            width: fit-content;
+            max-width: 70%;
+        }
+    </style>
+</head>
+<body>
+
+<h2 style="text-align: center;">
+  FAQ Customer Support Chatbot<br>
+  Wenzemart Store®
+</h2>
+
+<div id="chatbox"></div>
+
+<input id="input" type="text" placeholder="Type your question here...">
+<button id="send">Send</button>
+
+<!-- ENTER KEY SENDS MESSAGE -->
+<script>
+document.getElementById("input").addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("send").click();
+    }
+});
+</script>
+
+<!-- SEND BUTTON LOGIC -->
+<script>
+document.getElementById("send").onclick = function () {
+    const message = document.getElementById("input").value.trim();
+    if (message === "") return;
+
+    const chatbox = document.getElementById("chatbox");
+
+    // Add user message bubble
+    chatbox.innerHTML += `<div class="user-msg">${message}</div>`;
+
+    fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: message })
+    })
+    .then(res => res.json())
+    .then(data => {
+        // Add bot message bubble
+        chatbox.innerHTML += `<div class="bot-msg">${data.response}</div>`;
+        chatbox.scrollTop = chatbox.scrollHeight;
+    });
+
+    document.getElementById("input").value = "";
+};
+</script>
+
+</body>
+</html>
